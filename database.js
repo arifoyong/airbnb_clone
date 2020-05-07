@@ -1,13 +1,14 @@
-// export const user = "oyong";
-// export const password = "oyong";
-// export const host = "localhost";
-// export const database = "nextbnb";
+const user = "oyong";
+const password = "oyong";
+const host = "localhost";
+const database = "nextbnb";
 
-const Database = {
-  user: "oyong",
-  password: "oyong",
-  host: "localhost",
-  database: "nextbnb",
-};
+const Sequelize = require("sequelize");
 
-module.exports = Database;
+const sequelize = new Sequelize(database, user, password, {
+  host,
+  dialect: "postgres",
+  logging: false,
+});
+
+module.exports = sequelize;

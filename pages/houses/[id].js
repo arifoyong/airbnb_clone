@@ -1,8 +1,9 @@
 import { useState, useEffect } from "react";
-import houses from "../houses.json";
+// import houses from "../houses.json";
 import Head from "next/head";
 import Layout from "../../components/Layout";
 import DateRangePicker from "../../components/DateRangePicker";
+import fetch from "isomorphic-unfetch";
 
 const House = (props) => {
   const [dateChosen, setDateChosen] = useState(false);
@@ -37,6 +38,7 @@ const House = (props) => {
           <p>
             {props.house.rating} ({props.house.reviewsCount})
           </p>
+          <p>{props.house.description}</p>
         </article>{" "}
         <aside>
           <h2>Add dates for price</h2>
@@ -90,10 +92,14 @@ const House = (props) => {
   );
 };
 
-House.getInitialProps = ({ query }) => {
+House.getInitialProps = async ({ query }) => {
   const { id } = query;
+
+  const res = await fetch(`http://localhost:3000/api/house/${id}`);
+  const house = await res.json();
+
   return {
-    house: houses.filter((house) => house.id === id)[0],
+    house,
   };
 };
 

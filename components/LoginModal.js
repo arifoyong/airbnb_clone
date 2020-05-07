@@ -24,14 +24,18 @@ export default (props) => {
   const setUser = useStoreActions((actions) => actions.user.setUser);
 
   const submit = async () => {
+    if (!password) {
+      alert("Password cannot be empty");
+      return;
+    }
+
     try {
-      const response = await axios.post("api/auth/login", {
+      const response = await axios.post("/api/auth/login", {
         email,
         password,
       });
 
       if (response.data.status === "error") {
-        console.log("server return error");
         alert(response.data.message);
         return;
       }
@@ -39,7 +43,7 @@ export default (props) => {
       setUser(email);
       setHideModal();
     } catch (err) {
-      alert(err);
+      alert(err.response.data.message);
       return;
     }
   };
@@ -50,8 +54,6 @@ export default (props) => {
       <div>
         <form
           onSubmit={(event) => {
-            console.log(email, password);
-            console.log("login");
             submit();
             event.preventDefault();
           }}

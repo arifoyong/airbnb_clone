@@ -3,10 +3,13 @@ const bodyParser = require("body-parser");
 const next = require("next");
 const session = require("express-session");
 const SequelizeStore = require("connect-session-sequelize")(session.Store);
-const User = require("./models/model.js").User;
-const sequelize = require("./models/model.js").sequelize;
 const passport = require("passport");
 const LocalStrategy = require("passport-local").Strategy;
+
+const sequelize = require("./database.js");
+const User = require("./models/user.js");
+const House = require("./models/house.js");
+const Review = require("./models/review.js");
 
 const port = parseInt(process.env.PORT, 10) || 3000;
 const dev = process.env.NODE_ENV !== "production";
@@ -18,6 +21,8 @@ const sessionStore = new SequelizeStore({
 });
 
 // sessionStore.sync();
+// House.sync();
+// Review.sync();
 
 passport.use(
   new LocalStrategy(
@@ -62,6 +67,7 @@ passport.deserializeUser((email, done) => {
 
 nextApp.prepare().then(() => {
   const server = express();
+
   server.use(bodyParser.urlencoded({ extended: false }));
   server.use(bodyParser.json());
 
@@ -125,17 +131,12 @@ nextApp.prepare().then(() => {
   });
 
   server.post("/api/auth/login", async (req, res) => {
-    console.log("here");
     passport.authenticate("local", (err, user, info) => {
       if (err) {
-        console.log("got error");
-        res.statusCode = 500;
-        res.end(JSON.stringify({ status: "error", message: err }));
-        return;
+        return res.status(400).json({ status: "error", message: err });
       }
 
       if (!user) {
-        console.log("no mathing user");
         res.statusCode = 500;
         res.end(
           JSON.stringify({
@@ -158,6 +159,28 @@ nextApp.prepare().then(() => {
         );
       });
     })(req, res, next);
+  });
+
+  server.get("/api/house", (req, res) => {
+    House.findAll().then((result) => {
+      // const houses = result.rows.map((house) => house.dataValues);
+
+      // res.writeHead(200, {
+      //   "Content-Type": "application/json",
+      // });
+      res.status(200).json(result);
+      // res.end(JSON.stringify(result));
+    });
+  });
+
+  server.get("/api/house/:id", (req, res) => {
+    const { id } = req.params;
+
+    House.findByPk(id).then((house) => {
+      if (!house) res.status(404).json({ message: "Not Found" });
+
+      res.status(200).json(house);
+    });
   });
 
   server.all("*", (req, res) => {

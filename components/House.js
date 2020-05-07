@@ -6,12 +6,9 @@ const House = (props) => (
       <a>
         <img src={props.picture} width="100%" alt="House picture" />
         <p>
-          {props.id}: {props.type} - {props.town}
+          {props.type} - {props.town}
         </p>
         <p>{props.title} </p>
-        <p>
-          {props.rating} ({props.reviewsCount})
-        </p>
       </a>
     </Link>
   </div>
