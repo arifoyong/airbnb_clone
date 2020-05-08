@@ -161,26 +161,17 @@ nextApp.prepare().then(() => {
     })(req, res, next);
   });
 
-  server.get("/api/house", (req, res) => {
-    House.findAll().then((result) => {
-      // const houses = result.rows.map((house) => house.dataValues);
+  server.get("/api/house", async (req, res) => {
+    const houses = await House.findAll();
 
-      // res.writeHead(200, {
-      //   "Content-Type": "application/json",
-      // });
-      res.status(200).json(result);
-      // res.end(JSON.stringify(result));
-    });
+    res.status(200).json(houses);
   });
 
-  server.get("/api/house/:id", (req, res) => {
-    const { id } = req.params;
+  server.get("/api/house/:id", async (req, res) => {
+    const house = await House.findByPk(req.params.id);
 
-    House.findByPk(id).then((house) => {
-      if (!house) res.status(404).json({ message: "Not Found" });
-
-      res.status(200).json(house);
-    });
+    if (!house) res.status(404).json({ message: "Not Found" });
+    res.status(200).json(house);
   });
 
   server.all("*", (req, res) => {
