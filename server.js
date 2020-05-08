@@ -171,6 +171,17 @@ nextApp.prepare().then(() => {
     const house = await House.findByPk(req.params.id);
 
     if (!house) res.status(404).json({ message: "Not Found" });
+
+    const review = await Review.findAll({
+      raw: true,
+      where: { houseId: house.id },
+    });
+
+    if (review) {
+      house.dataValues.reviews = review.map((review) => review);
+      house.dataValues.reviewsCount = review.length;
+    }
+
     res.status(200).json(house);
   });
 

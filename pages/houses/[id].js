@@ -35,10 +35,24 @@ const House = (props) => {
             {props.house.type} - {props.house.town}
           </p>
           <p>{props.house.title}</p>
-          <p>
-            {props.house.rating} ({props.house.reviewsCount})
-          </p>
+          <p>Review count:{props.house.reviewsCount}</p>
           <p>{props.house.description}</p>
+          {props.house.reviewsCount ? (
+            <div className="reviews">
+              <h3>{props.house.reviewsCount} Reviews</h3>
+
+              {props.house.reviews.map((review, index) => {
+                return (
+                  <div key={index}>
+                    <p>{new Date(review.createdAt).toDateString()}</p>
+                    <p>{review.comment}</p>
+                  </div>
+                );
+              })}
+            </div>
+          ) : (
+            <></>
+          )}
         </article>{" "}
         <aside>
           <h2>Add dates for price</h2>
