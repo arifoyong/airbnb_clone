@@ -29,7 +29,7 @@ export default (props) => {
 
   const submit = async () => {
     try {
-      const response = await axios.post("api/auth/register", {
+      const response = await axios.post("/api/auth/register", {
         email,
         password,
         passwordconfirmation,

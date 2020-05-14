@@ -10,6 +10,7 @@ const sequelize = require("./database.js");
 const User = require("./models/user.js");
 const House = require("./models/house.js");
 const Review = require("./models/review.js");
+const Booking = require("./models/booking.js");
 
 const port = parseInt(process.env.PORT, 10) || 3000;
 const dev = process.env.NODE_ENV !== "production";
@@ -23,6 +24,7 @@ const sessionStore = new SequelizeStore({
 // sessionStore.sync();
 // House.sync();
 // Review.sync();
+// Booking.sync();
 
 passport.use(
   new LocalStrategy(
@@ -183,6 +185,32 @@ nextApp.prepare().then(() => {
     }
 
     res.status(200).json(house);
+  });
+
+  server.post("/api/house/reserve", async (req, res) => {
+    const userEmail = req.session.passport.user;
+
+    const findUser = await User.findOne({ where: { email: userEmail } });
+
+    if (!findUser) {
+      res.status(400).json({ status: "error", message: "invalid credentials" });
+    }
+
+    try {
+      const book = await Booking.create({
+        houseId: req.body.houseId,
+        userId: findUser.dataValues.id,
+        startDate: req.body.startDate,
+        endDate: req.body.endDate,
+      });
+
+      console.log(book);
+      const msg = `Booking successful.Booking ID = ${book.id}`;
+      res.status(200).json({ status: "sucess", message: msg });
+    } catch (err) {
+      console.log(err);
+      res.status(500).json({ status: "server error", message: err });
+    }
   });
 
   server.all("*", (req, res) => {
